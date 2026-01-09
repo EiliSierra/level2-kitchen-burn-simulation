@@ -1,0 +1,21 @@
+# macOS
+__MACOSX/
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Node modules (if added later)
+node_modules/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp

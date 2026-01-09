@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2 Kitchen Burn - Immune System Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- View Toggle -->
+    <div class="view-toggle">
+        <button id="toggle-designer" class="toggle-btn">Designer</button>
+        <button id="toggle-player" class="toggle-btn active">Player</button>
+    </div>
+
+    <!-- Designer Backend -->
+    <div id="designer-view" class="view">
+        <h1>Designer Backend - Parameter Configuration</h1>
+        <div class="designer-content">
+            <div class="parameter-section">
+                <h2>Fixed Parameters</h2>
+                <div id="fixed-parameters" class="parameter-grid"></div>
+            </div>
+            <div class="parameter-section">
+                <h2>Player-Adjustable Parameter Values</h2>
+                <div id="player-parameter-values" class="parameter-grid"></div>
+            </div>
+            <div class="designer-actions">
+                <button id="save-parameters" class="btn btn-primary">Save Parameters</button>
+                <button id="reset-parameters" class="btn btn-secondary">Reset to Defaults</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Frontend -->
+    <div id="player-view" class="view active">
+        <h1>Level 2 Kitchen Burn - Immune System Simulation</h1>
+        
+        <div class="player-controls">
+            <!-- Player-Adjustable Properties -->
+            <div class="control-group">
+                <h3>Adjustable Properties</h3>
+                <div class="dropdown-group">
+                    <label for="inflammation-signal-speed">Inflammation Signal Speed:</label>
+                    <select id="inflammation-signal-speed" disabled>
+                        <option value="Fast">Fast</option>
+                        <option value="Mid">Mid</option>
+                        <option value="Slow">Slow</option>
+                    </select>
+                </div>
+                <div class="dropdown-group">
+                    <label for="m1-m2-switch-threshold">M1/M2 Switch Threshold:</label>
+                    <select id="m1-m2-switch-threshold" disabled>
+                        <option value="Low">Low</option>
+                        <option value="Medium-Low">Medium-Low</option>
+                        <option value="Medium-High">Medium-High</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <div class="dropdown-group">
+                    <label for="pr-cytokine-production-rate">PR Cytokine Production Rate:</label>
+                    <select id="pr-cytokine-production-rate" disabled>
+                        <option value="Strong">Strong</option>
+                        <option value="Weak">Weak</option>
+                    </select>
+                </div>
+                <div class="dropdown-group">
+                    <label for="m1-macrophage-activation-rate">M1 Macrophage Activation Rate:</label>
+                    <select id="m1-macrophage-activation-rate" disabled>
+                        <option value="Strong">Strong</option>
+                        <option value="Weak">Weak</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Read-only Displays -->
+            <div class="control-group">
+                <h3>Current Status</h3>
+                <div class="status-display">
+                    <div class="status-item">
+                        <label>Current Time Step:</label>
+                        <span id="current-time-step">T0</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Inflammation Signal Speed:</label>
+                        <span id="display-inflammation-signal-speed">None</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Inflammation Intensity:</label>
+                        <span id="display-inflammation-intensity">None</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Energy Remaining:</label>
+                        <span id="display-energy-remaining">470</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Skin Fully Healed?</label>
+                        <span id="display-skin-healed">NO</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Bacteria Eradicated?</label>
+                        <span id="display-bacteria-eradicated">NO</span>
+                    </div>
+                    <div class="status-item">
+                        <label>Simulation Outcome:</label>
+                        <span id="display-sim-outcome">PENDING</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Time Controls -->
+            <div class="control-group">
+                <h3>Simulation Controls</h3>
+                <div class="time-controls">
+                    <button id="play-btn" class="btn btn-primary">Play</button>
+                    <button id="reset-btn" class="btn btn-secondary">Reset</button>
+                    <div class="speed-control">
+                        <label for="sim-speed">Speed (steps/sec):</label>
+                        <input type="number" id="sim-speed" min="1" max="10" step="1" value="1" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Graph -->
+        <div class="graph-container">
+            <canvas id="simulation-chart"></canvas>
+        </div>
+    </div>
+
+    <script src="simulation.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
+

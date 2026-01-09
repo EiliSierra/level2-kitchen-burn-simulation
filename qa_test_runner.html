@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Test Runner - Level 2 Kitchen Burn</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+        }
+        .btn-primary:hover { transform: scale(1.05); }
+        .btn-success {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #000;
+        }
+        .btn-success:hover { transform: scale(1.05); }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .progress-container {
+            background: #2a2a4a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #00ff88);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+        }
+        .progress-text {
+            text-align: center;
+            font-size: 16px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #2a2a4a;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-label { color: #888; }
+        .stat-card.winners .stat-value { color: #00ff88; }
+        .stat-card.losers .stat-value { color: #ff4444; }
+        .stat-card.energy .stat-value { color: #ffaa00; }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #2a2a4a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .results-table th, .results-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a5a;
+        }
+        .results-table th {
+            background: #3a3a5a;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+        .results-table tr:hover { background: #3a3a5a; }
+        .result-win {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        .result-fail {
+            color: #ff4444;
+        }
+        .winner-row {
+            background: rgba(0, 255, 136, 0.1) !important;
+        }
+        .winners-section {
+            background: linear-gradient(135deg, #1a3a2a, #2a4a3a);
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .winners-section h2 {
+            color: #00ff88;
+            margin-bottom: 15px;
+        }
+        .winner-card {
+            background: #2a4a3a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .winner-config {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .winner-details {
+            color: #aaa;
+            margin-top: 5px;
+        }
+        #log {
+            background: #111;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+        }
+        .log-win { color: #00ff88; }
+        .log-fail { color: #ff6666; }
+        .log-info { color: #00d4ff; }
+        .hidden { display: none; }
+        .tester-info {
+            background: #2a2a4a;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .tester-info input {
+            background: #3a3a5a;
+            border: 1px solid #4a4a6a;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-left: 10px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>QA Test Runner</h1>
+        <p class="subtitle">Level 2 Kitchen Burn - Immune System Simulation | Testing 48 Combinations</p>
+
+        <div class="tester-info">
+            <label>Tester Name: <input type="text" id="testerName" value="Eili Sierra"></label>
+            <label style="margin-left: 30px;">Date: <input type="text" id="testDate" value="" readonly></label>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="runTestsBtn" onclick="startTests()">
+                Run All 48 Tests
+            </button>
+            <button class="btn btn-success" id="downloadBtn" onclick="downloadReport()" disabled>
+                Download Report
+            </button>
+            <button class="btn btn-success" id="downloadCSVBtn" onclick="downloadCSV()" disabled>
+                Download CSV
+            </button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <p class="progress-text" id="progressText">Ready to start testing...</p>
+        </div>
+
+        <div class="stats-grid hidden" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card winners">
+                <div class="stat-value" id="statWinners">0</div>
+                <div class="stat-label">Winners</div>
+            </div>
+            <div class="stat-card losers">
+                <div class="stat-value" id="statLosers">0</div>
+                <div class="stat-label">Failures</div>
+            </div>
+            <div class="stat-card energy">
+                <div class="stat-value" id="statEnergy">0</div>
+                <div class="stat-label">Energy Depleted</div>
+            </div>
+        </div>
+
+        <div class="winners-section hidden" id="winnersSection">
+            <h2>WINNING COMBINATIONS</h2>
+            <div id="winnersList"></div>
+        </div>
+
+        <h2 style="margin-bottom: 15px;">Test Results</h2>
+        <div style="overflow-x: auto;">
+            <table class="results-table" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Signal Speed</th>
+                        <th>M1/M2 Threshold</th>
+                        <th>PR Rate</th>
+                        <th>M1 Rate</th>
+                        <th>Stopped At</th>
+                        <th>Final Skin</th>
+                        <th>Final Bacteria</th>
+                        <th>Result</th>
+                        <th>Failure Reason</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                    <tr><td colspan="10" style="text-align: center; color: #888;">Click "Run All 48 Tests" to begin...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 style="margin: 30px 0 15px;">Execution Log</h2>
+        <div id="log">Waiting to start tests...</div>
+    </div>
+
+    <script src="simulation.js"></script>
+    <script>
+        // Set current date
+        document.getElementById('testDate').value = new Date().toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Test parameters
+        const TEST_PARAMETERS = {
+            initial_skin_barrier_integrity: 0.75,
+            skin_integrity_threshold: 0.85,
+            base_repair_high: 0.01,
+            base_repair_low: 0.005,
+            bacteria_damage_threshold: 150.0,
+            bacterial_damage_modifier: 5e-05,
+            pr_boost_modifier: 5e-05,
+            inflammation_intensity_threshold: 100.0,
+            bacterial_inflow_high: 5.0,
+            bacterial_inflow_low: 20.0,
+            bacteria_reproduction_rate: 0.1,
+            bacteria_removal_rate_neutrophils: 2.0,
+            bacteria_removal_rate_macrophages: 3.0,
+            inactive_neutrophils_per_step: 5.0,
+            neutrophil_migration_steps: 1.0,
+            neutrophil_expiration_steps: 3.0,
+            neutrophil_energy_cost: 10.0,
+            neutrophil_activation_cost: 1.0,
+            inactive_m1_per_step: 1.0,
+            m1_migration_steps: 5.0,
+            macrophage_expiration_steps: 15.0,
+            macrophage_energy_cost: 20.0,
+            pi_production_burn_site_high: 1.0,
+            pi_production_burn_site_low: 3.0,
+            pi_production_neutrophils: 3.0,
+            pi_production_m1: 5.0,
+            pi_expiration_steps: 3.0,
+            inflammation_energy_cost: 5.0,
+            energy_allotment_per_step: 470.0,
+            inflammation_signal_speed_fast_steps: 1.0,
+            inflammation_signal_speed_mid_steps: 2.0,
+            inflammation_signal_speed_slow_steps: 3.0,
+            m1_m2_switch_threshold_low: 10.0,
+            m1_m2_switch_threshold_medium_low: 20.0,
+            m1_m2_switch_threshold_medium_high: 30.0,
+            m1_m2_switch_threshold_high: 40.0,
+            pr_cytokine_production_rate_strong: 40.0,
+            pr_cytokine_production_rate_weak: 20.0,
+            m1_macrophage_activation_rate_strong: 25.0,
+            m1_macrophage_activation_rate_weak: 50.0
+        };
+
+        const SIGNAL_SPEEDS = ['Slow', 'Mid', 'Fast'];
+        const SWITCH_THRESHOLDS = ['Low', 'Medium-Low', 'Medium-High', 'High'];
+        const PR_RATES = ['Strong', 'Weak'];
+        const M1_RATES = ['Strong', 'Weak'];
+
+        let allResults = [];
+        let logElement = document.getElementById('log');
+
+        function log(message, type = '') {
+            const span = document.createElement('span');
+            span.className = type ? `log-${type}` : '';
+            span.textContent = message + '\n';
+            logElement.appendChild(span);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function runSingleTest(testNum, signalSpeed, switchThreshold, prRate, m1Rate) {
+            const params = {
+                ...TEST_PARAMETERS,
+                inflammation_signal_speed: signalSpeed,
+                m1_m2_switch_threshold: switchThreshold,
+                pr_cytokine_production_rate: prRate,
+                m1_macrophage_activation_rate: m1Rate
+            };
+
+            const sim = new ImmuneSystemSimulation(params);
+            sim.run();
+
+            let lastStep = 30;
+            let energyDepleted = false;
+            let depletedAtStep = null;
+
+            for (let t = 1; t <= 30; t++) {
+                if (sim.state.energy_depleted[t]) {
+                    energyDepleted = true;
+                    depletedAtStep = t;
+                    lastStep = t;
+                    break;
+                }
+            }
+
+            const finalSkin = sim.state.skin_integrity[lastStep];
+            const finalBacteria = sim.state.bacteria_total_count[lastStep];
+            const finalEnergy = sim.state.energy_remaining[lastStep];
+
+            const skinHealed = finalSkin >= 0.99;
+            const bacteriaEradicated = finalBacteria <= 0.5;
+            const reachedT30 = lastStep === 30 && !energyDepleted;
+
+            const isWinner = reachedT30 && skinHealed && bacteriaEradicated;
+
+            let failureReason = '';
+            if (!isWinner) {
+                if (energyDepleted) {
+                    failureReason = `Energy depleted at T${depletedAtStep}`;
+                } else if (!skinHealed && !bacteriaEradicated) {
+                    failureReason = 'Skin not healed AND Bacteria not eradicated';
+                } else if (!skinHealed) {
+                    failureReason = 'Skin not healed';
+                } else if (!bacteriaEradicated) {
+                    failureReason = 'Bacteria not eradicated';
+                }
+            }
+
+            return {
+                testNum,
+                signalSpeed,
+                switchThreshold,
+                prRate,
+                m1Rate,
+                lastStep,
+                finalSkin: finalSkin.toFixed(4),
+                finalBacteria: finalBacteria.toFixed(2),
+                finalEnergy: Math.round(finalEnergy),
+                energyDepleted,
+                depletedAtStep,
+                skinHealed,
+                bacteriaEradicated,
+                reachedT30,
+                isWinner,
+                result: isWinner ? 'WIN' : 'FAIL',
+                failureReason
+            };
+        }
+
+        async function startTests() {
+            document.getElementById('runTestsBtn').disabled = true;
+            allResults = [];
+            logElement.innerHTML = '';
+
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            log('='.repeat(60), 'info');
+            log('QA TEST REPORT - Level 2 Kitchen Burn Simulation', 'info');
+            log('Tester: ' + document.getElementById('testerName').value, 'info');
+            log('Date: ' + document.getElementById('testDate').value, 'info');
+            log('='.repeat(60), 'info');
+            log('');
+
+            let testNum = 1;
+            const totalTests = SIGNAL_SPEEDS.length * SWITCH_THRESHOLDS.length * PR_RATES.length * M1_RATES.length;
+
+            for (const signalSpeed of SIGNAL_SPEEDS) {
+                for (const switchThreshold of SWITCH_THRESHOLDS) {
+                    for (const prRate of PR_RATES) {
+                        for (const m1Rate of M1_RATES) {
+                            // Run test
+                            const result = runSingleTest(testNum, signalSpeed, switchThreshold, prRate, m1Rate);
+                            allResults.push(result);
+
+                            // Update progress
+                            const progress = (testNum / totalTests) * 100;
+                            document.getElementById('progressFill').style.width = progress + '%';
+                            document.getElementById('progressFill').textContent = Math.round(progress) + '%';
+                            document.getElementById('progressText').textContent = `Testing: ${signalSpeed} / ${switchThreshold} / ${prRate} / ${m1Rate}`;
+
+                            // Log result
+                            const logType = result.isWinner ? 'win' : 'fail';
+                            log(`Test #${String(testNum).padStart(2, '0')}: ${signalSpeed}/${switchThreshold}/${prRate}/${m1Rate}`, logType);
+                            log(`  Result: ${result.result} | T${result.lastStep} | Skin: ${result.finalSkin} | Bacteria: ${result.finalBacteria}`, logType);
+                            if (!result.isWinner) {
+                                log(`  Reason: ${result.failureReason}`, 'fail');
+                            }
+                            log('');
+
+                            // Add to table
+                            const row = document.createElement('tr');
+                            if (result.isWinner) row.className = 'winner-row';
+                            row.innerHTML = `
+                                <td>${result.testNum}</td>
+                                <td>${result.signalSpeed}</td>
+                                <td>${result.switchThreshold}</td>
+                                <td>${result.prRate}</td>
+                                <td>${result.m1Rate}</td>
+                                <td>T${result.lastStep}</td>
+                                <td>${result.finalSkin}</td>
+                                <td>${result.finalBacteria}</td>
+                                <td class="${result.isWinner ? 'result-win' : 'result-fail'}">${result.result}</td>
+                                <td>${result.failureReason}</td>
+                            `;
+                            tbody.appendChild(row);
+
+                            testNum++;
+
+                            // Small delay for UI update
+                            await new Promise(resolve => setTimeout(resolve, 10));
+                        }
+                    }
+                }
+            }
+
+            // Show stats
+            const winners = allResults.filter(r => r.isWinner);
+            const energyDepletions = allResults.filter(r => r.energyDepleted);
+
+            document.getElementById('statsGrid').classList.remove('hidden');
+            document.getElementById('statTotal').textContent = allResults.length;
+            document.getElementById('statWinners').textContent = winners.length;
+            document.getElementById('statLosers').textContent = allResults.length - winners.length;
+            document.getElementById('statEnergy').textContent = energyDepletions.length;
+
+            // Show winners section
+            if (winners.length > 0) {
+                document.getElementById('winnersSection').classList.remove('hidden');
+                const winnersList = document.getElementById('winnersList');
+                winnersList.innerHTML = '';
+                winners.forEach(w => {
+                    const card = document.createElement('div');
+                    card.className = 'winner-card';
+                    card.innerHTML = `
+                        <div class="winner-config">Test #${w.testNum}: ${w.signalSpeed} / ${w.switchThreshold} / ${w.prRate} / ${w.m1Rate}</div>
+                        <div class="winner-details">Final Skin: ${w.finalSkin} | Final Bacteria: ${w.finalBacteria} | Energy Remaining: ${w.finalEnergy}</div>
+                    `;
+                    winnersList.appendChild(card);
+                });
+            }
+
+            // Update progress
+            document.getElementById('progressText').textContent = `Complete! ${winners.length} winning combination(s) found out of ${totalTests} tests.`;
+
+            // Enable download buttons
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('downloadCSVBtn').disabled = false;
+            document.getElementById('runTestsBtn').disabled = false;
+
+            // Final log
+            log('='.repeat(60), 'info');
+            log('TESTING COMPLETE', 'info');
+            log(`Total Tests: ${allResults.length}`, 'info');
+            log(`Winners: ${winners.length}`, 'win');
+            log(`Failures: ${allResults.length - winners.length}`, 'fail');
+            log('='.repeat(60), 'info');
+        }
+
+        function downloadCSV() {
+            const headers = [
+                'Test #', 'Signal Speed', 'M1/M2 Threshold', 'PR Rate', 'M1 Rate',
+                'Stopped At', 'Final Skin', 'Final Bacteria', 'Final Energy',
+                'Energy Depleted?', 'Skin Healed?', 'Bacteria Eradicated?', 'Result', 'Failure Reason'
+            ];
+
+            let csv = headers.join(',') + '\n';
+
+            allResults.forEach(r => {
+                const row = [
+                    r.testNum, r.signalSpeed, r.switchThreshold, r.prRate, r.m1Rate,
+                    `T${r.lastStep}`, r.finalSkin, r.finalBacteria, r.finalEnergy,
+                    r.energyDepleted ? 'YES' : 'NO',
+                    r.skinHealed ? 'YES' : 'NO',
+                    r.bacteriaEradicated ? 'YES' : 'NO',
+                    r.result,
+                    `"${r.failureReason}"`
+                ];
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `QA_Test_Results_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function downloadReport() {
+            const tester = document.getElementById('testerName').value;
+            const date = document.getElementById('testDate').value;
+            const winners = allResults.filter(r => r.isWinner);
+            const energyDepletions = allResults.filter(r => r.energyDepleted);
+
+            let report = `# QA Test Report: Level 2 Kitchen Burn - Immune System Simulation
+
+**Document Version:** 1.0
+**Test Date:** ${date}
+**Tester:** ${tester}
+**Project:** Cell Collective - Case 2 Prototype v1
+**Status:** COMPLETE
+
+---
+
+## Executive Summary
+
+This report documents the comprehensive Quality Assurance testing performed on the Level 2 Kitchen Burn Immune System Simulation prototype. All ${allResults.length} possible combinations of player-adjustable parameters were systematically tested.
+
+### Key Findings
+
+| Metric | Result |
+|--------|--------|
+| Total Combinations Tested | ${allResults.length} |
+| Winning Combinations | ${winners.length} (${(winners.length/allResults.length*100).toFixed(2)}%) |
+| Failed Combinations | ${allResults.length - winners.length} (${((allResults.length - winners.length)/allResults.length*100).toFixed(2)}%) |
+| Energy Depletion Failures | ${energyDepletions.length} |
+| Test Coverage | 100% |
+
+`;
+
+            if (winners.length > 0) {
+                report += `### Winning Configuration(s) Identified
+
+`;
+                winners.forEach((w, i) => {
+                    report += `**Winner #${i + 1}:**
+| Parameter | Value |
+|-----------|-------|
+| Inflammation Signal Speed | ${w.signalSpeed} |
+| M1/M2 Switch Threshold | ${w.switchThreshold} |
+| PR Cytokine Production Rate | ${w.prRate} |
+| M1 Macrophage Activation Rate | ${w.m1Rate} |
+| Final Skin Integrity | ${w.finalSkin} |
+| Final Bacteria Count | ${w.finalBacteria} |
+| Energy Remaining | ${w.finalEnergy} |
+
+`;
+                });
+            }
+
+            report += `---
+
+## Complete Test Results
+
+| Test # | Signal Speed | M1/M2 Threshold | PR Rate | M1 Rate | Stopped At | Final Skin | Final Bacteria | Result | Failure Reason |
+|--------|--------------|-----------------|---------|---------|------------|------------|----------------|--------|----------------|
+`;
+
+            allResults.forEach(r => {
+                report += `| ${r.testNum} | ${r.signalSpeed} | ${r.switchThreshold} | ${r.prRate} | ${r.m1Rate} | T${r.lastStep} | ${r.finalSkin} | ${r.finalBacteria} | **${r.result}** | ${r.failureReason} |\n`;
+            });
+
+            report += `
+---
+
+## Conclusion
+
+All ${allResults.length} possible parameter combinations for the Level 2 Kitchen Burn simulation have been systematically tested. **${winners.length} winning combination(s)** have been identified.
+
+${winners.length === 1 ? 'The single winning combination requires a very specific configuration of all four parameters.' : winners.length > 1 ? `There are ${winners.length} winning combinations available.` : 'No winning combinations were found - this may indicate a balance issue with the simulation parameters.'}
+
+---
+
+## Sign-Off
+
+| Role | Name | Date | Signature |
+|------|------|------|-----------|
+| QA Tester | ${tester} | ${date} | _____________ |
+
+---
+
+*This report was generated using the automated QA Test Runner.*
+*Test Date: ${new Date().toISOString()}*
+`;
+
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `QA_Test_Report_${new Date().toISOString().split('T')[0]}.md`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
